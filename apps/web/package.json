@@ -14,7 +14,7 @@
     "generate:demo-data": "node scripts/generate-demo-data.mjs"
   },
   "engines": {
-    "node": ">=20"
+    "node": "20.x"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.0.4",
