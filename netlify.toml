@@ -1,0 +1,33 @@
+# The deployable app is the Vite frontend under apps/web. It runs fully in the
+# browser against the bundled demo dataset (VITE_DATA_SOURCE defaults to "local"),
+# so no backend is needed on Netlify.
+[build]
+  base    = "apps/web"
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+  NPM_FLAGS = "--include=dev"
+
+# `netlify dev` runs the Vite dev server (its port is set in vite.config.ts).
+[dev]
+  framework  = "#custom"
+  command    = "npm run dev"
+  targetPort = 5175
+
+# Single-page app: let React Router handle every client-side route.
+[[redirects]]
+  from   = "/*"
+  to     = "/index.html"
+  status = 200
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/index.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
