@@ -1,8 +1,8 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "installCommand": "cd apps/web && npm ci --include=dev",
-  "buildCommand": "cd apps/web && npm run build",
-  "outputDirectory": "apps/web/dist",
+  "installCommand": "ORIG=$PWD; D=apps/web; [ -f \"$D/package.json\" ] || D=web; [ -f \"$D/package.json\" ] || D=.; cd \"$D\" && npm ci --include=dev",
+  "buildCommand": "ORIG=$PWD; D=apps/web; [ -f \"$D/package.json\" ] || D=web; [ -f \"$D/package.json\" ] || D=.; cd \"$D\" && npm run build && cd \"$ORIG\" && if [ \"$D\" != \".\" ]; then cp -R \"$D/dist\" ./dist; fi",
+  "outputDirectory": "dist",
   "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }],
   "headers": [
     {

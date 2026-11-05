@@ -66,7 +66,9 @@ was captured and when, so a stale bundle is identifiable.
 
 ---
 
-## The one deployment trap
+## Two deployment traps
+
+### 1. `npm ci` must include devDependencies
 
 `vercel.json` installs with **`npm ci --include=dev`**, and that is not tidiness.
 
@@ -76,8 +78,37 @@ fails with `'tsc' is not recognized as an internal or external command`. This wa
 building this deployment, on a machine with `NODE_ENV=production`; the flag is what makes the install
 independent of the ambient environment.
 
+### 2. The build does not have to start at the repository root
+
+Vercel projects can be given a **Root Directory** (Project → Settings → General), and for a repository
+laid out as `apps/web` that is a natural thing to set. When it is set, the build's working directory is
+*inside* the repository — so the obvious `cd apps/web && …` fails with
+`sh: line 1: cd: apps/web: No such file or directory`. That is exactly what happened on this project's
+first deploy.
+
+Rather than making you find that setting and clear it, **the root `vercel.json` now locates the
+frontend itself**, and works from the repository root, from `apps`, or from `apps/web`:
+
+```sh
+D=apps/web
+[ -f "$D/package.json" ] || D=web
+[ -f "$D/package.json" ] || D=.
+cd "$D" && npm ci --include=dev
+```
+
+and after the build, the output is placed at `./dist` **relative to wherever the build started**, which
+is what `outputDirectory: "dist"` resolves against. A second, plain `apps/web/vercel.json` covers the
+case where Vercel reads the config from that directory instead.
+
 Nothing else is needed: no `VITE_*` variable has to be set, because the `local` default is in the code
 (`src/local/index.ts`), not in a `.env` file that Vercel would not have.
+
+The recommended project settings are still the simple ones — **Root Directory `apps/web`**, framework
+**Vite**, build `npm run build`, output `dist` — but the deployment does not depend on them being right.
+
+`apps/web/package.json` pins `"engines": { "node": "20.x" }` rather than `">=20"`, matching the
+Dockerfile's `node:20-alpine`. Vercel warns that a range like `>=20` will silently move to a new major
+release one day; pinning means the build does not change under you.
 
 ---
 
@@ -85,17 +116,19 @@ Nothing else is needed: no `VITE_*` variable has to be set, because the `local` 
 
 ```json
 {
-  "installCommand": "cd apps/web && npm ci --include=dev",
-  "buildCommand": "cd apps/web && npm run build",
-  "outputDirectory": "apps/web/dist",
+  "installCommand": "ORIG=$PWD; D=apps/web; [ -f \"$D/package.json\" ] || D=web; …",
+  "buildCommand":   "ORIG=$PWD; D=apps/web; … cd \"$D\" && npm run build && cd \"$ORIG\" && … cp -R \"$D/dist\" ./dist",
+  "outputDirectory": "dist",
   "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
 }
 ```
 
+- **The locating, above**, so the Root Directory setting cannot break the build.
 - **`rewrites`** is what makes a deep link work. Vercel serves a real file when one exists and falls
   back to `index.html` for anything else, so opening `/properties/<id>` directly loads the app rather
   than a 404. It is the same job `WebConfig` does for the container.
-- **`outputDirectory`** points at the Vite build, because the repository root holds the backend too.
+- **`outputDirectory`** is `dist` in both configs, because it is resolved against the working directory
+  the build used — which is why the build command normalises the output to `./dist`.
 - **The headers** cache `/assets/*` immutably (Vite fingerprints those filenames) and keep
   `index.html` revalidated, so a new deploy is picked up immediately.
 
