@@ -1,0 +1,14 @@
+# Registers the hook that turns a hosted platform's `postgres://` connection string into the
+# `jdbc:postgresql://` URL the driver requires. It has to run as an EnvironmentPostProcessor rather
+# than a bean: the datasource is built from the resolved environment, so by bean-creation time the
+# unnormalised URL would already have been read. See DataSourceUrlNormaliser.
+#
+# The second hook is the SQL-file data source, which starts an ephemeral PostgreSQL when
+# `app.data-source=sqlfiles` so the application can be run from the migrations alone. Same reason for
+# being an EnvironmentPostProcessor. Both call `addFirst`, so which one wins is decided by their
+# order: SqlFileDataSourcePostProcessor declares LOWEST_PRECEDENCE and therefore runs last, putting an
+# explicitly requested ephemeral database above whatever DATABASE_URL happened to carry. The
+# ordering is not visible here - see the classes.
+org.springframework.boot.env.EnvironmentPostProcessor=\
+com.meridian.realestate.config.DataSourceUrlNormaliser,\
+com.meridian.realestate.config.SqlFileDataSourcePostProcessor

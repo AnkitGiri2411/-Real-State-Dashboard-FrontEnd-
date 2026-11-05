@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Meridian Estates">
+  <title>Meridian Estates</title>
+  <rect width="32" height="32" rx="4" fill="#F7F4EC"/>
+  <!-- The plot, corner cut back, with the meridian and its copper arc. -->
+  <path d="M4 4 H22 L28 10 V28 H4 Z" fill="#173F35"/>
+  <path d="M13 6 V27" fill="none" stroke="#D6B77A" stroke-width="1.75" stroke-linecap="round"/>
+  <path d="M8.5 14 A4.5 4.5 0 0 1 17.5 14" fill="none" stroke="#B87333" stroke-width="1.75" stroke-linecap="round"/>
+  <path d="M22 4 L28 10" fill="none" stroke="#B87333" stroke-width="1.75" stroke-linecap="round"/>
+</svg>

@@ -1,0 +1,38 @@
+# ============================================================================
+# Meridian Estates — what is deliberately not in version control.
+#
+# Every entry here is either reproducible from the checked-in sources or a
+# secret. The repository is public, so the distinction matters: build output is
+# merely noise, but an ignored secret is one that can be rotated.
+# ============================================================================
+
+# --- Dependencies and build output: reproducible, never committed ------------
+node_modules/
+target/
+dist/
+
+# --- Local runtime state -----------------------------------------------------
+.playwright-mcp/
+
+# --- Logs and editor scratch -------------------------------------------------
+*.log
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# --- Secrets -----------------------------------------------------------------
+# `backend/.env` holds this installation's local database password and token
+# signing key. The committed template is `backend/.env.example`, which carries
+# placeholders only. A host environment variable always wins over `.env`, so a
+# deployment never needs this file.
+#
+# These two rules come after the pattern above them on purpose: a later negation
+# re-includes a file an earlier rule excluded, which is the only way to keep the
+# `.env.example` templates visible while ignoring everything else that is one.
+.env
+.env.local
+*.env.local
+
+!.env.example
+!*.env.example

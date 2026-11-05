@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>3.3.3</version>
+    <relativePath/>
+  </parent>
+
+  <groupId>com.meridian</groupId>
+  <artifactId>real-estate-backend</artifactId>
+  <version>0.1.0</version>
+  <name>real-estate-backend</name>
+  <description>Meridian Estates - Real Estate Management Dashboard backend</description>
+
+  <properties>
+    <java.version>21</java.version>
+    <jjwt.version>0.12.6</jjwt.version>
+    <poi.version>5.3.0</poi.version>
+    <commons-csv.version>1.12.0</commons-csv.version>
+    <commons-io.version>2.17.0</commons-io.version>
+    <!--
+      Spring Boot 3.3.3 manages commons-lang3 at 3.14.0. embedded-postgres 2.2.2 brings
+      commons-compress 1.28.0, whose TarArchiveEntry calls SystemProperties.getUserName(String) -
+      a method added after 3.14.0 - so the managed version dies with a NoSuchMethodError while the
+      embedded server's own binaries are being unpacked, before any Spring bean exists. Raised to the
+      version embedded-postgres is itself built against.
+    -->
+    <commons-lang3.version>3.20.0</commons-lang3.version>
+    <embedded-postgres.version>2.2.2</embedded-postgres.version>
+    <!--
+      The PostgreSQL the SQL-file data source runs. Pinned rather than left at the library's own
+      default, so "the same data" means the same server as the installation it is standing in for -
+      this is the version render.yaml provisions and the one the migrations were verified against.
+    -->
+    <embedded-postgres-binaries.version>18.3.0</embedded-postgres-binaries.version>
+  </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <!--
+        Selects the PostgreSQL version of the embedded server. The library's release cycle and the
+        server's are independent, so this is the one place the version is chosen.
+      -->
+      <dependency>
+        <groupId>io.zonky.test.postgres</groupId>
+        <artifactId>embedded-postgres-binaries-bom</artifactId>
+        <version>${embedded-postgres-binaries.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-security</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-data-jpa</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-validation</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.flywaydb</groupId>
+      <artifactId>flyway-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.flywaydb</groupId>
+      <artifactId>flyway-database-postgresql</artifactId>
+    </dependency>
+
+    <!-- ============================================================
+         The SQL-file data source.
+
+         A real PostgreSQL, started in-process, created on this machine at boot and discarded on
+         exit. It exists so the demonstration portfolio can be run from the migrations alone,
+         without an installation to point at: the SQL chain is written in PL/pgSQL - `DO $$` blocks,
+         `gen_random_uuid()`, `LATERAL`, `generate_series`, partial indexes, `jsonb` - so the only
+         runtimes that can apply it are PostgreSQL ones. Anything else would mean rewriting the seed,
+         which would produce *reconstructed* data rather than the same data.
+
+         Compile scope, not test: SqlFileDataSourcePostProcessor is application code. It is reached
+         only when app.data-source=sqlfiles, so the default deployment never starts a server.
+         ============================================================ -->
+    <dependency>
+      <groupId>io.zonky.test</groupId>
+      <artifactId>embedded-postgres</artifactId>
+      <version>${embedded-postgres.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>io.jsonwebtoken</groupId>
+      <artifactId>jjwt-api</artifactId>
+      <version>${jjwt.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.jsonwebtoken</groupId>
+      <artifactId>jjwt-impl</artifactId>
+      <version>${jjwt.version}</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.jsonwebtoken</groupId>
+      <artifactId>jjwt-jackson</artifactId>
+      <version>${jjwt.version}</version>
+      <scope>runtime</scope>
+    </dependency>
+
+    <!-- ============================================================
+         Data import — deterministic spreadsheet and delimited-file parsing.
+         xlsx/xls via POI, RFC-4180 CSV via commons-csv. An uploaded file is
+         parsed in memory only and never written to disk, so there is no
+         temporary-file or path-traversal surface.
+         ============================================================ -->
+    <dependency>
+      <groupId>org.apache.poi</groupId>
+      <artifactId>poi-ooxml</artifactId>
+      <version>${poi.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-csv</artifactId>
+      <version>${commons-csv.version}</version>
+    </dependency>
+    <!-- commons-csv declares commons-io as optional, so it is not resolved
+         transitively; the reader needs it at runtime. -->
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>${commons-io.version}</version>
+    </dependency>
+
+    <!-- Loads backend/.env on startup so the installation is configured by
+         environment alone. A host environment variable always wins over .env. -->
+    <dependency>
+      <groupId>me.paulschwarz</groupId>
+      <artifactId>spring-dotenv</artifactId>
+      <version>4.0.0</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <finalName>real-estate-backend-${project.version}</finalName>
+    <plugins>
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
+</project>

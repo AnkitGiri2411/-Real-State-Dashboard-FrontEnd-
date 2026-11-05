@@ -1,0 +1,5 @@
+backend
+mvn spring-boot:run
+
+frontend
+npm run dev

@@ -1,0 +1,1368 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Outfit:wght@400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * ============================================================================
+ * MERIDIAN ESTATES - REAL ESTATE MANAGEMENT DASHBOARD
+ * Design tokens - the single source of truth for the running theme.
+ * ============================================================================
+ * The palette is derived from the firm's own mark (public/meridian-logo.svg):
+ *
+ *     meridian   ->  deep forest       #173F35
+ *     surveyor   ->  copper            #B87333
+ *     parchment  ->  warm paper        #F7F4EC
+ *
+ * It is deliberately NOT the hotel product's midnight indigo/brass on cool
+ * ivory, NOT the school product's cream/forest, and NOT the hospital product's
+ * clinical teal. Forest and copper on parchment is what a property and
+ * investment firm reads as: land, title, survey, ledger - a site office rather
+ * than a lobby, a classroom or a ward.
+ *
+ * ----------------------------------------------------------------------------
+ * THE COLOUR SYSTEM
+ * ----------------------------------------------------------------------------
+ * Every hue in this file plays exactly one of four roles, and the role decides
+ * which token you are allowed to use:
+ *
+ *   HUE      the decorative colour as drawn in the brand book. Rich, saturated,
+ *            and often too light to be legible as a line or a word. Used for
+ *            large fills - a donut slice, a unit tile, a wash.
+ *
+ *   ACCENT   the same hue darkened until it clears 3:1 against the parchment
+ *            canvas AND against its own tint. Used wherever the hue has to work
+ *            as a *mark*: a 2px chart line, a bar, a status dot, an icon.
+ *
+ *   INK      the same hue darkened until it clears 4.5:1 against its own wash.
+ *            Used wherever the hue has to be *read*: a label, a figure, a badge.
+ *
+ *   SURFACE  a pale wash of the hue, light enough to carry body text at 12:1+.
+ *            Used to give a card, a tile or a pane its identity.
+ *
+ * Nothing in the interface picks a colour freely. A section that is "about
+ * money" uses the copper family; a section that is "about a fault" uses the
+ * terracotta family. That is what stops a rich palette from turning into a
+ * rainbow: the colour is carrying the meaning, not decorating it.
+ *
+ * Contrast for every text-bearing pair in this file is asserted in
+ * `src/components/theme.test.tsx`, measured against these actual values rather
+ * than against remembered ones.
+ * ----------------------------------------------------------------------------
+ *
+ * `applyBrandTheme` re-applies --primary, --primary-soft and --secondary from
+ * the active product's branding, and derives matching hover and active states,
+ * so a purchased installation can be rebranded without a redesign and without
+ * keeping Meridian's forest under a different colour.
+ * ============================================================================
+ */
+:root {
+  color-scheme: light;
+  font-family: var(--font-body);
+
+  /* ---------------------------------------------------------------
+   * Brand
+   * --------------------------------------------------------------- */
+  --primary: #173f35; /* the meridian */
+  --primary-hover: #123129;
+  --primary-active: #0e2821;
+  --primary-soft: #dce7e2;
+  --primary-contrast: #f7f4ec;
+
+  --secondary: #b87333; /* the surveyor's copper */
+  --secondary-hover: #9c5f28;
+  --secondary-active: #825020;
+  --secondary-soft: #f5e7d7;
+
+  --accent: #2e7d6e; /* survey teal, the third series colour */
+  --accent-soft: #e0ebe8;
+
+  /* ---------------------------------------------------------------
+   * The property palette - HUE
+   *
+   * The brand book's own values, named for what they are. These are
+   * fills and washes; see ACCENT and INK below for the working halves.
+   * --------------------------------------------------------------- */
+  --hue-forest: #173f35;
+  --hue-architectural: #245b4a;
+  --hue-copper: #b87333;
+  --hue-champagne: #d6b77a;
+  --hue-sandstone: #c9b79c;
+  --hue-stone: #ded5c7;
+  --hue-sapphire: #42658a;
+  --hue-teal: #2e7d6e;
+  --hue-plum: #6e5a8c;
+  --hue-emerald: #1e7a5a;
+  --hue-amber: #c68a2e;
+  --hue-terracotta: #c05a3e;
+  --hue-burgundy: #8c2f39;
+  --hue-slate: #39434a;
+
+  /* Neutrals, also from the brand book. */
+  --hue-parchment: #f5f1e8;
+  --hue-soft-stone: #e5e0d6;
+  --hue-deep-slate: #39434a;
+
+  /* ---------------------------------------------------------------
+   * ACCENT - the mark half of each hue
+   *
+   * Every value below clears 3:1 against --surface and against its own
+   * tint, which is the threshold for a non-text graphic that carries
+   * meaning. The brief's copper, champagne, sandstone and amber are all
+   * lighter than that, so each is darkened to the nearest step that
+   * passes while staying recognisably the same colour.
+   * --------------------------------------------------------------- */
+  --accent-forest: #173f35;
+  --accent-architectural: #245b4a;
+  --accent-copper: #9e6229;
+  --accent-champagne: #8c6a28;
+  --accent-sandstone: #7e6b4e;
+  --accent-sapphire: #3a5a7d;
+  --accent-teal: #2a7263;
+  --accent-plum: #62507f;
+  --accent-emerald: #1e7a5a;
+  --accent-amber: #97661a;
+  --accent-terracotta: #a84a31;
+  --accent-burgundy: #8c2f39;
+  --accent-slate: #55606a;
+
+  /* ---------------------------------------------------------------
+   * INK - the readable half of each hue
+   *
+   * These are the same hues darkened until they pass 4.5:1 on their own
+   * wash. Several tones are tuned to be seen as marks and are too light
+   * to carry text on their own soft background - copper on copper-soft is
+   * short of the 4.5:1 a small label needs. The brand is unchanged; only
+   * the text-bearing variant of each hue is darker.
+   * --------------------------------------------------------------- */
+  --ink-forest: #123129;
+  --ink-architectural: #1b4739;
+  --ink-copper: #7a4a1c;
+  --ink-champagne: #6e5320;
+  --ink-sandstone: #5e4f38;
+  --ink-sapphire: #2c4661;
+  --ink-teal: #1f594d;
+  --ink-plum: #4c3e64;
+  --ink-emerald: #175c44;
+  --ink-amber: #6e4b12;
+  --ink-terracotta: #8a3b26;
+  --ink-burgundy: #6e242c;
+  --ink-slate: #39434a;
+
+  /* Readable halves of the core brand tones. */
+  --secondary-ink: #7a4a1c;
+  --success-ink: #175c44;
+  --warning-ink: #6e4b12;
+
+  /*
+   * Uniform tone triples.
+   *
+   * Every identity answers to the same three names - `--<tone>` (the mark),
+   * `--<tone>-soft` (the wash) and `--<tone>-ink` (the readable half) - so a
+   * component can take a tone as a prop and resolve all three by string, the
+   * way `--success`/`--success-soft`/`--success-ink` already worked. Without
+   * this, half the interface would spell its wash `--surface-copper` and the
+   * other half `--copper-soft`, and the two would drift.
+   */
+  --forest: var(--accent-forest);
+  --forest-soft: var(--surface-forest);
+  --forest-ink: var(--ink-forest);
+
+  --architectural: var(--accent-architectural);
+  --architectural-soft: var(--surface-architectural);
+  --architectural-ink: var(--ink-architectural);
+
+  --copper: var(--accent-copper);
+  --copper-soft: var(--surface-copper);
+  --copper-ink: var(--ink-copper);
+
+  --champagne: var(--accent-champagne);
+  --champagne-soft: var(--surface-champagne);
+  --champagne-ink: var(--ink-champagne);
+
+  --sandstone: var(--accent-sandstone);
+  --sandstone-soft: var(--surface-sandstone);
+  --sandstone-ink: var(--ink-sandstone);
+
+  --sapphire: var(--accent-sapphire);
+  --sapphire-soft: var(--surface-sapphire);
+  --sapphire-ink: var(--ink-sapphire);
+
+  --teal: var(--accent-teal);
+  --teal-soft: var(--surface-teal);
+  --teal-ink: var(--ink-teal);
+
+  --plum: var(--accent-plum);
+  --plum-soft: var(--surface-plum);
+  --plum-ink: var(--ink-plum);
+
+  --emerald: var(--accent-emerald);
+  --emerald-soft: var(--surface-emerald);
+  --emerald-ink: var(--ink-emerald);
+
+  --amber: var(--accent-amber);
+  --amber-soft: var(--surface-amber);
+  --amber-ink: var(--ink-amber);
+
+  --terracotta: var(--accent-terracotta);
+  --terracotta-soft: var(--surface-terracotta);
+  --terracotta-ink: var(--ink-terracotta);
+
+  --burgundy: var(--accent-burgundy);
+  --burgundy-soft: var(--surface-burgundy);
+  --burgundy-ink: var(--ink-burgundy);
+
+  --slate: var(--accent-slate);
+  --slate-soft: var(--surface-slate);
+  --slate-ink: var(--text-secondary);
+
+  /* ---------------------------------------------------------------
+   * SURFACES - the layered canvas
+   *
+   * The product is a light theme, not a dark one, but it does not sit on
+   * white. The canvas is a working parchment with depth; cards are a
+   * lighter parchment; only genuinely floating things (a modal, a
+   * popover) lift to near-white.
+   * --------------------------------------------------------------- */
+  --background: #ede8dc;
+  --surface: #f7f4ec;
+  --surface-elevated: #fdfbf6;
+  --surface-muted: #f0ebdf;
+  --surface-sunken: #e3ddce;
+
+  /* The tinted surfaces - one per colour identity. */
+  --surface-forest: #e0eae5;
+  --surface-architectural: #dfeae5;
+  --surface-copper: #f6e9da;
+  --surface-champagne: #f4ead3;
+  --surface-sandstone: #f1e9db;
+  --surface-sapphire: #e2e9f1;
+  --surface-teal: #ddebe7;
+  --surface-plum: #e8e3f0;
+  --surface-emerald: #dbede4;
+  --surface-amber: #f6ebd5;
+  --surface-terracotta: #f8e3dc;
+  --surface-burgundy: #f3dfe2;
+  --surface-slate: #e6e5e1;
+
+  /* The pressed step of each tint, for a hover that is felt rather than seen. */
+  --surface-forest-strong: #d5e3dc;
+  --surface-architectural-strong: #d3e3db;
+  --surface-copper-strong: #f1dfc8;
+  --surface-champagne-strong: #eee0c2;
+  --surface-sandstone-strong: #ebdfcb;
+  --surface-sapphire-strong: #d6e0ec;
+  --surface-teal-strong: #d0e3de;
+  --surface-plum-strong: #dfd8ea;
+  --surface-emerald-strong: #cfe6db;
+  --surface-amber-strong: #f1e2c4;
+  --surface-terracotta-strong: #f4d7cd;
+  --surface-burgundy-strong: #efd3d8;
+
+  /* The dimensional sheen every raised surface carries. A single low-opacity
+     white gradient is what turns a flat wash into a lit plane, and it costs
+     one background layer rather than a shadow. */
+  --sheen: linear-gradient(158deg, rgba(255, 255, 255, 0.62) 0%, rgba(255, 255, 255, 0) 54%);
+
+  /* The scrim behind a dialog, tinted toward deep forest rather than black,
+     so a modal reads as the lights dimming in this building. */
+  --overlay: rgba(14, 40, 33, 0.52);
+
+  /* ---------------------------------------------------------------
+   * Text
+   * --------------------------------------------------------------- */
+  --text-primary: #1c2523;
+  --text-secondary: #55605d;
+  --text-inverse: #f7f4ec;
+
+  /* ---------------------------------------------------------------
+   * Lines
+   *
+   * Copper and forest hairlines are the drawing's own rules, so they are
+   * tokens rather than literals repeated at each call site.
+   * --------------------------------------------------------------- */
+  --border: #dad3c4;
+  --border-strong: #c0b7a4;
+  --border-copper: rgba(184, 115, 51, 0.42);
+  --border-forest: rgba(23, 63, 53, 0.16);
+
+  /* ---------------------------------------------------------------
+   * Semantic
+   * --------------------------------------------------------------- */
+  --success: #1e7a5a;
+  --success-soft: #dbede4;
+  --warning: #97661a;
+  --warning-soft: #f6ebd5;
+  --danger: #a8402f;
+  --danger-soft: #f8e3dc;
+  --info: #3a5a7d;
+  --info-soft: #e2e9f1;
+
+  /* The names the rest of the interface reasons in. */
+  --status-success: var(--success);
+  --status-warning: var(--warning);
+  --status-danger: var(--danger);
+  --status-info: var(--info);
+  --status-premium: var(--accent-copper);
+
+  /* ---------------------------------------------------------------
+   * The unit-board status vocabulary
+   *
+   * A unit's state is the single thing the board is read for, so each
+   * state has one fixed colour and it never varies between screens. Every
+   * one of these is paired with the status written on the tile and named
+   * in the tile's accessible label, so colour reinforces the fact rather
+   * than carrying it alone.
+   * --------------------------------------------------------------- */
+  --status-available: var(--accent-emerald);
+  --status-occupied: var(--accent-sapphire);
+  --status-reserved: var(--accent-plum);
+  --status-listed: var(--accent-architectural);
+  --status-under-contract: var(--accent-amber);
+  --status-maintenance: var(--accent-slate);
+  --status-sold: var(--accent-burgundy);
+
+  /* ---------------------------------------------------------------
+   * The hero band - deep forest, read in parchment
+   *
+   * One cohesive dark surface rather than a row of coloured cards. The
+   * accents below are the light half of each hue: on deep forest it is the
+   * *pale* version that carries the meaning, which is the exact inverse of
+   * the rule the parchment screens follow.
+   * --------------------------------------------------------------- */
+  --hero-bg: linear-gradient(138deg, #1d4e42 0%, #173f35 48%, #0f2c25 100%);
+  --hero-text: #f5f1e8;
+  --hero-muted: #a9c2b8;
+  --hero-line: rgba(214, 183, 122, 0.26);
+  --hero-well: rgba(9, 26, 22, 0.36);
+
+  --hero-forest: #6fbfa2;
+  --hero-architectural: #7cc4a6;
+  --hero-copper: #e0a96b;
+  --hero-champagne: #e8d09a;
+  --hero-sandstone: #e3d6bc;
+  --hero-sapphire: #93b0d6;
+  --hero-teal: #63c0ae;
+  --hero-plum: #a99bd0;
+  --hero-emerald: #63c9a0;
+  --hero-amber: #e8b45f;
+  --hero-terracotta: #ef9a7c;
+  --hero-burgundy: #d98a96;
+
+  /* ---------------------------------------------------------------
+   * Analytics series
+   *
+   * The dashboard's charts need more hues than the interface does, and
+   * each one carries a fixed meaning rather than being decorative:
+   *
+   *   forest       the portfolio's own result - value, net income
+   *   copper       premium / money - rent, capital value, yield
+   *   teal         volume - units, occupancy, listings
+   *   sapphire     occupancy and let units
+   *   plum         reserved and pipeline-held stock
+   *   emerald      healthy / collected / available
+   *   amber        attention - outstanding, pending, expiring
+   *   terracotta   problem - overdue, faults, cancellations
+   *   burgundy     closed - sold, terminated
+   *   sandstone    comparison and context series
+   *
+   * All of them clear 3:1 as a mark on the parchment canvas and on their own
+   * tint, and the ink tokens above carry any label that sits on one.
+   * --------------------------------------------------------------- */
+  --series-forest: #173f35;
+  --series-architectural: #245b4a;
+  --series-copper: #9e6229;
+  --series-champagne: #8c6a28;
+  --series-sandstone: #7e6b4e;
+  --series-sapphire: #3a5a7d;
+  --series-teal: #2a7263;
+  --series-plum: #62507f;
+  --series-emerald: #1e7a5a;
+  --series-amber: #97661a;
+  --series-terracotta: #a84a31;
+  --series-burgundy: #8c2f39;
+  --series-muted: #55606a;
+
+  /* The second stop of every chart gradient, so a line is drawn as a band
+     of its own colour rather than as one flat stroke. */
+  --series-forest-light: #2f6b58;
+  --series-architectural-light: #3a7d67;
+  --series-copper-light: #c9853f;
+  --series-champagne-light: #c99a52;
+  --series-sandstone-light: #b39c78;
+  --series-sapphire-light: #5f80a6;
+  --series-teal-light: #46a08c;
+  --series-plum-light: #8a76ab;
+  --series-emerald-light: #34a075;
+  --series-amber-light: #c68a2e;
+  --series-terracotta-light: #c05a3e;
+  --series-burgundy-light: #a5454f;
+  --series-muted-light: #7c8792;
+
+  /* ---------------------------------------------------------------
+   * Focus
+   *
+   * The ring is the keyboard reader's only signal, so it has to carry
+   * contrast, not just presence. A 16% alpha halo composites to roughly
+   * 1.25:1 and a low-vision reader cannot pick that out. At 55% it
+   * composites to about 3.6:1 against the surface, which clears the 3:1
+   * non-text contrast guidance while keeping the same hue, the same 4px
+   * geometry and the same soft-edged character.
+   * --------------------------------------------------------------- */
+  --ring: rgba(23, 63, 53, 0.55);
+  --ring-hero: rgba(214, 183, 122, 0.75);
+
+  /* ---------------------------------------------------------------
+   * Shape - Meridian's own geometry
+   *
+   * Rectilinear and drafting-like. Where the hotel product is soft and
+   * pill-shaped - 18px cards, 999px controls, 24px panels - this product is a
+   * drawing set: a 4px control, a 3px chip and a 10px panel read as a plan,
+   * not a brochure. This is the difference a reader registers before they read
+   * a single word, so it is deliberately the strongest divergence between the
+   * two products.
+   *
+   * (School is 10/14/8; Hospital is a uniform 16; Hotel is 18/24/999/12.)
+   * --------------------------------------------------------------- */
+  --radius-card: 6px;
+  --radius-panel: 10px;
+  --radius-control: 4px;
+  --radius-field: 4px;
+  --radius-chip: 3px;
+
+  /* ---------------------------------------------------------------
+   * Elevation - crisp, cool-neutral and tinted toward the forest, never
+   * black. A drawing is pinned to a board, not floating in a lobby: the
+   * shadows are tighter and less diffuse than a hospitality product's.
+   * --------------------------------------------------------------- */
+  --shadow-card: 0 1px 2px rgba(23, 63, 53, 0.06), 0 8px 20px -16px rgba(23, 63, 53, 0.28);
+  --shadow-soft: 0 18px 40px -24px rgba(23, 63, 53, 0.32);
+  --shadow-lift: 0 2px 4px rgba(23, 63, 53, 0.07), 0 16px 32px -20px rgba(23, 63, 53, 0.32);
+  --shadow-hero: 0 26px 52px -30px rgba(15, 44, 37, 0.55);
+  --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.55);
+
+  /* ---------------------------------------------------------------
+   * Typography - an editorial serif over a geometric sans.
+   *
+   * Fraunces carries the figures and headings: an optical-size serif with
+   * enough contrast to read as a property prospectus. Outfit carries the
+   * interface: geometric, quiet and highly legible at 11-14px.
+   *
+   * Distinct from Hospital (Inter only), School (Source Serif 4 + Inter) and
+   * Hotel (Sora + Manrope).
+   * --------------------------------------------------------------- */
+  --font-body: 'Outfit', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-display: 'Fraunces', Georgia, 'Times New Roman', serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  /*
+   * The layered canvas.
+   *
+   * Three extremely low-opacity washes over the parchment base: a forest pool
+   * behind the sidebar end, a copper warmth at the top right, and a vertical
+   * fall toward soft stone. Each is under 14% alpha, so the page reads as one
+   * material with depth rather than as three coloured zones - and every text
+   * pair measured in theme.test.tsx is measured against the flat --background
+   * beneath these, which is their lightest and therefore their worst case.
+   */
+  background-color: var(--background);
+  background-image:
+    radial-gradient(1180px 620px at 6% -6%, rgba(23, 63, 53, 0.1), rgba(23, 63, 53, 0) 62%),
+    radial-gradient(1020px 560px at 99% 2%, rgba(184, 115, 51, 0.13), rgba(184, 115, 51, 0) 58%),
+    linear-gradient(178deg, #f2ede1 0%, #ede8dc 48%, #e7e1d2 100%);
+  color: var(--text-primary);
+  min-height: 100vh;
+}
+
+/*
+ * The plot grid.
+ *
+ * A surveyor's graph paper inlaid behind everything: a fine 24px orthogonal
+ * grid with a heavier 120px major every five squares. It is fixed and
+ * non-scrolling, so it never becomes scrollable overflow and never competes
+ * with a figure the desk is reading.
+ *
+ * Orthogonal on purpose. The hotel product's inlay is a 45/135 degree diagonal
+ * lattice; a right-angled grid is what a site plan, a title drawing and a
+ * plot schedule are all ruled on.
+ */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(0deg, rgba(23, 63, 53, 0.032) 0 1px, transparent 1px 24px),
+    repeating-linear-gradient(90deg, rgba(23, 63, 53, 0.032) 0 1px, transparent 1px 24px),
+    repeating-linear-gradient(0deg, rgba(23, 63, 53, 0.055) 0 1px, transparent 1px 120px),
+    repeating-linear-gradient(90deg, rgba(23, 63, 53, 0.055) 0 1px, transparent 1px 120px);
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+#root {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(85, 96, 93, 0.32);
+  border-radius: var(--radius-chip);
+}
+
+/*
+ * ============================================================================
+ * Reduced motion
+ * ============================================================================
+ * A working desk should never make someone motion-sick, and an accessibility
+ * preference is a requirement rather than a nicety: vestibular disorders are
+ * triggered by exactly the slide and scale transitions this shell uses for
+ * drawers, modals and popovers.
+ * ============================================================================
+ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@layer utilities {
+  /*
+   * The survey rule - Meridian's signature divider.
+   *
+   * A 2px copper rule with a tick scale hanging beneath it, drawn from the
+   * scale bar at the foot of a site plan. It separates blocks of the dashboard
+   * the way a scale bar separates a drawing from its schedule.
+   *
+   * The colour is a custom property, so a section can carry its own identity's
+   * rule - the collections panel rules in emerald, the maintenance panel in
+   * terracotta - while the geometry stays identical everywhere.
+   */
+  .survey-rule {
+    position: relative;
+    height: 2px;
+    margin-top: 0.875rem;
+    background: var(--rule, var(--secondary));
+  }
+
+  .survey-rule::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 2px;
+    width: 100%;
+    max-width: 320px;
+    height: 5px;
+    /* 1px ticks every 8px, with a taller tick every fifth - a real scale. */
+    background-image:
+      repeating-linear-gradient(to right, var(--rule, var(--secondary)) 0 1px, transparent 1px 8px),
+      repeating-linear-gradient(to right, var(--rule, var(--secondary)) 0 1px, transparent 1px 40px);
+    background-size: 100% 3px, 100% 5px;
+    background-position: 0 0, 0 0;
+    background-repeat: repeat-x;
+    opacity: 0.55;
+  }
+
+  .copper-rule {
+    height: 2px;
+    background: var(--secondary);
+    position: relative;
+  }
+
+  .copper-rule::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 64px;
+    height: 2px;
+    background: var(--primary);
+  }
+
+  /*
+   * The stepped rule.
+   *
+   * Two staggered tick rows over a baseline - the orthogonal staircase a
+   * floor plan uses for a stair. It is the divider between dashboard blocks,
+   * where the survey rule opens a page.
+   */
+  .stair-divider {
+    height: 7px;
+    background-image:
+      repeating-linear-gradient(to right, var(--border) 0 1px, transparent 1px 16px),
+      repeating-linear-gradient(to right, var(--border) 0 1px, transparent 1px 16px);
+    background-size: 100% 3px;
+    background-position: 0 0, 8px 4px;
+    background-repeat: repeat-x;
+  }
+
+  /*
+   * The plot card.
+   *
+   * Meridian's signature container: a card whose top-right corner is cut back,
+   * the way a plot is notched out of a title drawing, with a copper tab down
+   * its leading edge marking the boundary. It identifies one property, unit or
+   * lease at a glance - the same job a plot marker does on a layout sheet.
+   */
+  .plot-card {
+    position: relative;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-card);
+    background-color: var(--surface);
+    background-image: var(--sheen);
+    padding: 0.875rem 1rem 0.875rem 1.125rem;
+  }
+
+  .plot-card::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 10px;
+    bottom: 10px;
+    width: 2px;
+    border-radius: 0 2px 2px 0;
+    background: var(--secondary);
+  }
+
+  /* The notch. Its fill matches whatever the card is sitting on, so the corner
+     reads as cut out of the sheet rather than painted on it. */
+  .plot-card::after {
+    content: '';
+    position: absolute;
+    top: -1px;
+    right: -1px;
+    width: 15px;
+    height: 15px;
+    background: var(--notch, var(--background));
+    border-left: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    border-bottom-left-radius: var(--radius-chip);
+  }
+
+  /*
+   * A tinted, dimensional surface.
+   *
+   * The wash is set from a custom property so one class serves every colour
+   * identity, and the sheen is layered on top so the plane catches light. Used
+   * by the dashboard's section panels and the communication console's panes.
+   */
+  .surface-tinted {
+    background-color: var(--tint, var(--surface));
+    background-image: var(--sheen);
+  }
+
+  /*
+   * The hero band.
+   *
+   * Deep forest with a copper bloom at the top right and a teal pool at the
+   * bottom left, plus the drawing's own linework: concentric survey contours
+   * over a faint plot grid.
+   *
+   * One surface, not a row of coloured cards - the metrics on it are told apart
+   * by their accents and their labels, not by being separate boxes.
+   */
+  .hero-band {
+    position: relative;
+    color: var(--hero-text);
+    background-image:
+      radial-gradient(120% 130% at 92% 4%, rgba(184, 115, 51, 0.28) 0%, rgba(184, 115, 51, 0) 56%),
+      radial-gradient(88% 118% at 2% 104%, rgba(46, 125, 110, 0.28) 0%, rgba(46, 125, 110, 0) 58%),
+      var(--hero-bg);
+    box-shadow: var(--shadow-hero);
+  }
+
+  .hero-band::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    /* Survey contours: nested rings, then the plot grid the drawing is ruled on. */
+    background-image:
+      radial-gradient(
+        ellipse 58% 78% at 76% 66%,
+        transparent 0 34%,
+        rgba(214, 183, 122, 0.11) 34% 34.4%,
+        transparent 34.4% 48%,
+        rgba(214, 183, 122, 0.08) 48% 48.4%,
+        transparent 48.4% 62%,
+        rgba(214, 183, 122, 0.055) 62% 62.4%,
+        transparent 62.4%
+      ),
+      repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.05) 0 1px, transparent 1px 44px),
+      repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.05) 0 1px, transparent 1px 44px);
+  }
+
+  /*
+   * The drawing legend.
+   *
+   * A key panel with a scale bar and hatch swatches, laid out the way a
+   * drawing's legend is. Used under charts and the portfolio map so the colours
+   * are read as a coded drawing rather than as decoration.
+   */
+  .plan-legend {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-card);
+    background-color: var(--surface-muted);
+    padding: 0.625rem 0.75rem;
+  }
+
+  .plan-swatch {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border: 1px solid var(--border-strong);
+    border-radius: 2px;
+  }
+
+  /* The hatch used for a reserved/pending band, so a state can be encoded
+     without relying on a colour alone. */
+  .hatch {
+    background-image: repeating-linear-gradient(
+      45deg,
+      rgba(28, 37, 35, 0.22) 0 2px,
+      transparent 2px 5px
+    );
+  }
+
+  .focus-meridian:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 4px var(--ring);
+    border-color: var(--primary);
+  }
+
+  .focus-hero:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 4px var(--ring-hero);
+  }
+}
+
+@layer components {
+  /* ---------------- surfaces ---------------- */
+
+  /*
+   * The panel and card bodies.
+   *
+   * A tinted surface is never a saturated block: it is a wash light enough to
+   * carry a 12:1 body text, layered with the same sheen the plain surface uses
+   * so the two feel like the same material at different temperatures.
+   */
+  .panel-plain {
+    background-color: var(--surface);
+  }
+
+  .panel-forest {
+    background-color: var(--surface-forest);
+    background-image: var(--sheen);
+  }
+
+  .panel-architectural {
+    background-color: var(--surface-architectural);
+    background-image: var(--sheen);
+  }
+
+  .panel-copper {
+    background-color: var(--surface-copper);
+    background-image: var(--sheen);
+  }
+
+  .panel-champagne {
+    background-color: var(--surface-champagne);
+    background-image: var(--sheen);
+  }
+
+  .panel-sandstone {
+    background-color: var(--surface-sandstone);
+    background-image: var(--sheen);
+  }
+
+  .panel-sapphire {
+    background-color: var(--surface-sapphire);
+    background-image: var(--sheen);
+  }
+
+  .panel-teal {
+    background-color: var(--surface-teal);
+    background-image: var(--sheen);
+  }
+
+  .panel-plum {
+    background-color: var(--surface-plum);
+    background-image: var(--sheen);
+  }
+
+  .panel-emerald {
+    background-color: var(--surface-emerald);
+    background-image: var(--sheen);
+  }
+
+  .panel-amber {
+    background-color: var(--surface-amber);
+    background-image: var(--sheen);
+  }
+
+  .panel-terracotta {
+    background-color: var(--surface-terracotta);
+    background-image: var(--sheen);
+  }
+
+  .panel-burgundy {
+    background-color: var(--surface-burgundy);
+    background-image: var(--sheen);
+  }
+
+  .panel-slate {
+    background-color: var(--surface-slate);
+    background-image: var(--sheen);
+  }
+
+  .panel-muted {
+    background-color: var(--surface-muted);
+  }
+
+  /*
+   * The tinted KPI tile.
+   *
+   * The accent and the wash arrive as custom properties, so one class serves
+   * every colour identity while the lift on hover is expressed once, in CSS -
+   * which an inline style cannot do. A tile lifts and its accent intensifies;
+   * it does not change hue, because the hue is the meaning.
+   *
+   * The leading edge is 3px so it reads as a plot boundary marker rather than a
+   * soft accent stripe.
+   */
+  .tile {
+    position: relative;
+    background-color: var(--tile-surface, var(--surface));
+    background-image: var(--sheen);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--tile-accent, var(--primary));
+    transition:
+      background-color 0.18s ease,
+      box-shadow 0.18s ease,
+      transform 0.18s ease,
+      border-color 0.18s ease;
+  }
+
+  .focus-meridian.tile:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 4px var(--ring);
+    border-color: var(--tile-accent, var(--primary));
+  }
+
+  .tile-interactive:hover {
+    background-color: var(--tile-surface-hover, var(--tile-surface, var(--surface)));
+    border-color: var(--tile-accent, var(--border-strong));
+    box-shadow: var(--shadow-lift);
+    transform: translateY(-1px);
+  }
+
+  /*
+   * The icon plate inside a tile - a lighter plate pressed onto the wash, so it
+   * works on every tint without a second surface token per identity.
+   */
+  .tile-icon {
+    background-color: rgba(255, 255, 255, 0.66);
+    color: var(--tile-accent, var(--primary));
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+    transition: background-color 0.18s ease;
+  }
+
+  .tile-interactive:hover .tile-icon {
+    background-color: rgba(255, 255, 255, 0.9);
+  }
+
+  /*
+   * The eyebrow - a coloured micro-label above a figure.
+   *
+   * Set in the display face, letterspaced and small, so a section says what
+   * family it belongs to before the reader reaches the number.
+   */
+  .eyebrow {
+    font-family: var(--font-display);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  /* ---------------- navigation ---------------- */
+  .nav-item {
+    @apply relative flex items-center gap-3 px-3.5 py-2.5 text-sm font-medium transition;
+    border-radius: var(--radius-control);
+    color: var(--text-secondary);
+    border-left: 3px solid transparent;
+  }
+
+  .nav-item:hover {
+    background: rgba(23, 63, 53, 0.07);
+    color: var(--text-primary);
+  }
+
+  /*
+   * The active item is a forest plate with a copper indicator down its leading
+   * edge and a parchment label. The rail itself is a forest-tinted surface, so
+   * the active plate sits *within* a drawn plane rather than floating on white.
+   */
+  .nav-item-active {
+    background: linear-gradient(96deg, var(--primary) 0%, #1f4f43 100%);
+    color: #f0dfc6;
+    font-weight: 600;
+    border-left: 3px solid var(--secondary);
+    box-shadow: 0 10px 22px -16px rgba(14, 40, 33, 0.75);
+  }
+
+  .nav-item-active:hover {
+    background: linear-gradient(96deg, var(--primary-hover) 0%, #1a4539 100%);
+    color: #f0dfc6;
+  }
+
+  .nav-item-active > svg {
+    color: var(--secondary);
+  }
+
+  .nav-group-label {
+    @apply mb-1.5 px-3.5 text-[10px] font-bold uppercase;
+    letter-spacing: 0.18em;
+    /*
+     * No opacity here. Fading the muted token to 75% blended it toward the rail
+     * and cost the label its 4.5:1 - a group heading nobody can read is worse
+     * than one that is slightly less hushed. It is already the quietest thing in
+     * the rail by size and letter-spacing alone.
+     */
+    color: var(--text-secondary);
+  }
+
+  /* ---------------- tables ---------------- */
+  /*
+   * Tables are a schedule here: a ruled register with a copper rule under the
+   * header and no vertical rules, the way a plot schedule or a rent roll is
+   * set. The desk reads these all day, so legibility beats density.
+   */
+  .table-ledger {
+    @apply w-full border-collapse text-sm;
+  }
+
+  .table-ledger thead th {
+    background: rgba(23, 63, 53, 0.035);
+    color: var(--text-secondary);
+    @apply px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider;
+    border-bottom: 2px solid var(--secondary);
+  }
+
+  .table-ledger tbody td {
+    border-top: 1px solid var(--border);
+    @apply px-4 py-3.5 align-middle;
+  }
+
+  .table-ledger tbody tr:hover {
+    background: rgba(23, 63, 53, 0.045);
+  }
+
+  /* ---------------- buttons ---------------- */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold transition
+           disabled:cursor-not-allowed disabled:opacity-50;
+    border-radius: var(--radius-control);
+  }
+
+  .btn:active:not(:disabled) {
+    transform: translateY(1px);
+  }
+
+  .btn-primary {
+    background: linear-gradient(120deg, var(--primary) 0%, #1f4f43 100%);
+    color: var(--primary-contrast);
+    box-shadow: var(--shadow-card);
+  }
+
+  .btn-primary:hover:not(:disabled) {
+    background: linear-gradient(120deg, var(--primary-hover) 0%, #1a4539 100%);
+  }
+
+  .btn-primary:active:not(:disabled) {
+    background: var(--primary-active);
+  }
+
+  .btn-secondary {
+    background: linear-gradient(120deg, var(--secondary) 0%, #c9853f 100%);
+    color: #24160a;
+  }
+
+  .btn-secondary:hover:not(:disabled) {
+    background: var(--secondary-hover);
+  }
+
+  .btn-secondary:active:not(:disabled) {
+    background: var(--secondary-active);
+  }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--text-secondary);
+  }
+
+  .btn-ghost:hover:not(:disabled) {
+    background: var(--surface-muted);
+    color: var(--text-primary);
+  }
+
+  .btn-outline {
+    background: var(--surface-elevated);
+    color: var(--text-primary);
+    border: 1px solid var(--border);
+  }
+
+  .btn-outline:hover:not(:disabled) {
+    background: var(--surface-muted);
+    border-color: var(--border-strong);
+  }
+
+  .btn-danger {
+    background: var(--danger);
+    color: #fff;
+  }
+
+  .btn-danger:hover:not(:disabled) {
+    background: #8f3627;
+  }
+
+  /* ---------------- form controls ---------------- */
+  .input,
+  .select,
+  .textarea {
+    @apply w-full px-3.5 py-2.5 text-sm;
+    border-radius: var(--radius-field);
+    background: var(--surface-elevated);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    /*
+     * A form control is usually a grid or flex child. Those have `min-width:
+     * auto`, so a `<select>` refuses to shrink below its longest option and
+     * pushes a dense filter bar past the viewport. min-width:0 is what makes a
+     * filter bar survive a narrow width.
+     */
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .input::placeholder,
+  .textarea::placeholder {
+    color: #98a09d;
+  }
+
+  .input:focus-visible,
+  .select:focus-visible,
+  .textarea:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 4px var(--ring);
+    border-color: var(--primary);
+  }
+
+  .input:disabled,
+  .select:disabled,
+  .textarea:disabled {
+    background: var(--surface-sunken);
+    color: var(--text-secondary);
+  }
+
+  .checkbox,
+  .radio {
+    accent-color: var(--primary);
+    @apply h-4 w-4 rounded;
+  }
+
+  /* ---------------- badges ---------------- */
+  .badge {
+    @apply inline-flex items-center gap-1 px-2 py-1 text-[11px] font-bold uppercase whitespace-nowrap;
+    border-radius: var(--radius-chip);
+    letter-spacing: 0.04em;
+  }
+
+  .badge-success {
+    background: var(--success-soft);
+    color: var(--success-ink);
+  }
+
+  .badge-warning {
+    background: var(--warning-soft);
+    color: var(--warning-ink);
+  }
+
+  .badge-danger {
+    background: var(--danger-soft);
+    color: var(--danger);
+  }
+
+  .badge-info {
+    background: var(--info-soft);
+    color: var(--info);
+  }
+
+  .badge-neutral {
+    background: var(--surface-sunken);
+    color: var(--text-secondary);
+  }
+
+  /* The property identities, so a badge can carry the same colour family as the
+     panel it sits in without either of them having to reach for a literal. */
+  .badge-forest {
+    background: var(--surface-forest);
+    color: var(--ink-forest);
+  }
+
+  .badge-architectural {
+    background: var(--surface-architectural);
+    color: var(--ink-architectural);
+  }
+
+  .badge-copper,
+  .badge-premium {
+    background: var(--surface-copper);
+    color: var(--ink-copper);
+  }
+
+  .badge-champagne {
+    background: var(--surface-champagne);
+    color: var(--ink-champagne);
+  }
+
+  .badge-sandstone {
+    background: var(--surface-sandstone);
+    color: var(--ink-sandstone);
+  }
+
+  .badge-sapphire {
+    background: var(--surface-sapphire);
+    color: var(--ink-sapphire);
+  }
+
+  .badge-teal {
+    background: var(--surface-teal);
+    color: var(--ink-teal);
+  }
+
+  .badge-plum {
+    background: var(--surface-plum);
+    color: var(--ink-plum);
+  }
+
+  .badge-emerald {
+    background: var(--surface-emerald);
+    color: var(--ink-emerald);
+  }
+
+  .badge-amber {
+    background: var(--surface-amber);
+    color: var(--ink-amber);
+  }
+
+  .badge-terracotta {
+    background: var(--surface-terracotta);
+    color: var(--ink-terracotta);
+  }
+
+  .badge-burgundy {
+    background: var(--surface-burgundy);
+    color: var(--ink-burgundy);
+  }
+
+  .badge-slate {
+    background: var(--surface-slate);
+    color: var(--ink-slate);
+  }
+
+  /* ---------------- figures ---------------- */
+  .kpi-value {
+    font-family: var(--font-display);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.01em;
+  }
+
+  /* ---------------- the communication console ---------------- */
+  /*
+   * The three panes of the Communication screen, each a different material so
+   * the desk can tell at a glance which zone they are in without reading a
+   * heading: the rail is deep forest, the thread is parchment, the contact file
+   * is sandstone.
+   *
+   * The hotel product's console is an indigo rail over champagne; this one is
+   * forest over sandstone, which reads as a site office rather than a lobby.
+   */
+  .portfolio-rail {
+    background-color: #14372f;
+    background-image:
+      radial-gradient(120% 90% at 100% 0%, rgba(184, 115, 51, 0.16) 0%, rgba(184, 115, 51, 0) 62%),
+      linear-gradient(168deg, #1b4a3f 0%, #14372f 52%, #0f2c25 100%);
+    color: #e6efeb;
+  }
+
+  /*
+   * A control on the deep forest rail.
+   *
+   * The rail is the one dark plane in an otherwise light product, so it needs
+   * its own field treatment: a translucent well rather than the parchment input,
+   * which would punch a white rectangle through the middle of the console.
+   */
+  .rail-input {
+    background-color: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    color: #f2f7f4;
+  }
+
+  .rail-input::placeholder {
+    color: rgba(230, 239, 235, 0.55);
+  }
+
+  .rail-input:focus-visible {
+    outline: none;
+    background-color: rgba(255, 255, 255, 0.12);
+    border-color: rgba(224, 169, 107, 0.72);
+    box-shadow: 0 0 0 4px rgba(224, 169, 107, 0.42);
+  }
+
+  .rail-checkbox {
+    accent-color: var(--hue-champagne);
+  }
+
+  /* A pill read on the deep forest rail. Every one of these clears 7:1 on the
+     rail's own ground, so a status is legible at 11px. */
+  .rail-pill {
+    @apply inline-flex items-center gap-1 px-2 py-1 text-[11px] font-bold uppercase whitespace-nowrap;
+    border-radius: var(--radius-chip);
+    letter-spacing: 0.04em;
+    border: 1px solid transparent;
+  }
+
+  .rail-pill-open {
+    background: rgba(99, 201, 160, 0.16);
+    border-color: rgba(99, 201, 160, 0.34);
+    color: #8ce0be;
+  }
+
+  .rail-pill-waiting {
+    background: rgba(232, 180, 95, 0.16);
+    border-color: rgba(232, 180, 95, 0.34);
+    color: #edc884;
+  }
+
+  .rail-pill-closed {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.15);
+    color: #b6c8c1;
+  }
+
+  .rail-pill-new {
+    background: rgba(239, 154, 124, 0.18);
+    border-color: rgba(239, 154, 124, 0.38);
+    color: #f6b39a;
+  }
+
+  .rail-pill-unowned {
+    background: rgba(147, 176, 214, 0.16);
+    border-color: rgba(147, 176, 214, 0.34);
+    color: #b6c8e8;
+  }
+
+  /* Section labels and metadata on the rail. */
+  .rail-label {
+    color: #b6c8c1;
+  }
+
+  .rail-muted {
+    color: rgba(230, 239, 235, 0.66);
+  }
+
+  .thread-panel {
+    background-color: var(--surface);
+    background-image:
+      radial-gradient(90% 60% at 100% 0%, rgba(184, 115, 51, 0.09) 0%, rgba(184, 115, 51, 0) 60%),
+      linear-gradient(180deg, #f9f6ee 0%, #f4f0e5 100%);
+  }
+
+  .dossier-panel {
+    background-color: var(--surface-sandstone);
+    background-image:
+      radial-gradient(80% 40% at 0% 100%, rgba(23, 63, 53, 0.07) 0%, rgba(23, 63, 53, 0) 60%),
+      var(--sheen);
+  }
+
+  /* One conversation on the rail. The active row takes a copper indicator and a
+     forest lift; an unread one carries a copper dot. */
+  .rail-row {
+    transition:
+      background-color 0.16s ease,
+      border-color 0.16s ease;
+    border-left: 3px solid transparent;
+  }
+
+  .rail-row:hover {
+    background-color: rgba(255, 255, 255, 0.06);
+  }
+
+  .rail-row-active,
+  .rail-row-active:hover {
+    background-image: linear-gradient(96deg, rgba(184, 115, 51, 0.24) 0%, rgba(23, 63, 53, 0) 78%);
+    background-color: rgba(255, 255, 255, 0.08);
+    border-left: 3px solid var(--secondary);
+  }
+
+  /* ---------------- the message blocks ---------------- */
+  /*
+   * An owner, tenant or prospect writes on parchment with a copper edge; the
+   * firm answers on deep forest; an internal note is a plum plate. Three
+   * materials, three voices - told apart by more than which side of the column
+   * they sit on.
+   */
+  .message-client {
+    background-color: var(--surface-elevated);
+    background-image: var(--sheen);
+    border: 1px solid var(--border-copper);
+    color: var(--text-primary);
+    border-radius: var(--radius-card);
+    border-top-left-radius: 2px;
+  }
+
+  .message-firm {
+    background-image: linear-gradient(132deg, #1f4f43 0%, #173f35 55%, #123129 100%);
+    color: var(--hero-text);
+    border-left: 3px solid var(--secondary);
+    border-radius: var(--radius-card);
+    border-top-right-radius: 2px;
+  }
+
+  .message-note {
+    background-color: var(--surface-plum);
+    border: 1px solid var(--border);
+    color: var(--plum-ink);
+    border-radius: var(--radius-field);
+  }
+
+  /* A client message nobody has opened yet - a real state the desk works from. */
+  .message-unread {
+    box-shadow: 0 0 0 2px rgba(184, 115, 51, 0.5);
+  }
+}

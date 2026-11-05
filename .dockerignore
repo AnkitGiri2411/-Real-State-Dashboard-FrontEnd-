@@ -1,0 +1,40 @@
+# ============================================================================
+# What the Docker build context excludes.
+#
+# Without this the context carries the whole of `apps/web/node_modules` and any
+# local `backend/target`, which slows every build and — worse — lets a stale
+# artifact from a previous local build sit where the image expects a fresh one.
+#
+# The image builds the application from source in both stages, so none of this
+# is needed to produce it.
+# ============================================================================
+
+# --- Dependencies and build output: rebuilt inside the image -----------------
+node_modules
+**/node_modules
+target
+**/target
+dist
+**/dist
+
+# --- Version control and tooling ---------------------------------------------
+.git
+.gitignore
+.github
+.idea
+.vscode
+.playwright-mcp
+
+# --- Secrets -----------------------------------------------------------------
+# Never bake a local `.env` into an image: the platform supplies the real values
+# as environment variables, and an image that carries a development signing key
+# is one that can be pushed somewhere it does not belong.
+.env
+**/.env
+!**/.env.example
+
+# --- Not needed to build -----------------------------------------------------
+*.log
+docs
+dashboard.png
+run-application.txt

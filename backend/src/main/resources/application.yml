@@ -1,0 +1,152 @@
+spring:
+  application:
+    name: real-estate-backend
+
+  datasource:
+    # Prefer an explicit DATABASE_URL when provided; otherwise compose from
+    # DB_HOST / DB_PORT / DB_NAME so an installation only sets simple parts.
+    url: ${DATABASE_URL:jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:real_estate}}
+    username: ${DB_USERNAME:real_estate}
+    password: ${DB_PASSWORD:real_estate}
+
+  jpa:
+    hibernate:
+      # PostgreSQL is authoritative for the schema. Flyway creates and upgrades
+      # it; Hibernate only ever validates, so a drift between the migrations and
+      # the entity model fails startup instead of being silently rewritten.
+      ddl-auto: validate
+    properties:
+      hibernate:
+        # The application role owns this schema, so no superuser grant is needed
+        # on `public` (which PostgreSQL 15+ restricts).
+        default_schema: ${DB_SCHEMA:real_estate}
+    open-in-view: false
+
+  flyway:
+    enabled: true
+    default-schema: ${DB_SCHEMA:real_estate}
+    schemas: ${DB_SCHEMA:real_estate}
+
+  servlet:
+    multipart:
+      # Data import accepts a file, so the container limit has to exist; the
+      # application's own limit below is the one that is actually enforced.
+      max-file-size: ${IMPORT_MAX_FILE_SIZE_MB:10}MB
+      max-request-size: ${IMPORT_MAX_FILE_SIZE_MB:10}MB
+
+server:
+  port: ${SERVER_PORT:8083}
+  error:
+    # The error contract is the application's own envelope, never the
+    # container's default body.
+    include-message: never
+    include-stacktrace: never
+
+jwt:
+  secret: ${JWT_SECRET:meridian-estates-local-development-secret-key-2026-very-long-random-value}
+
+# ============================================================
+# RUNTIME
+# ============================================================
+# There is exactly one schema authority - the Flyway chain in db/migration - and
+# one source of demonstration truth: V22 and V23. Nothing below changes either of
+# those; `data-source` decides only *where the chain is applied*.
+#
+#   postgres  (default)  A PostgreSQL this installation is pointed at, through
+#                        DATABASE_URL or DB_HOST/DB_PORT/DB_NAME. This is the
+#                        deployment, and what render.yaml provisions.
+#   sqlfiles             An ephemeral PostgreSQL started on this machine at boot
+#                        and seeded by the migration chain alone, so the product
+#                        runs with no database to install. Nothing is read from
+#                        another database, the server is discarded at shutdown,
+#                        and every write is lost with it - which is why it is
+#                        refused outside a development environment.
+#                        See SqlFileDataSourcePostProcessor.
+# ============================================================
+app:
+  env: ${APP_ENV:development}
+
+  data-source: ${APP_DATA_SOURCE:postgres}
+
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5175,http://localhost:4175,http://localhost:3000}
+
+  auth:
+    access-token-expiration-seconds: ${ACCESS_TOKEN_EXPIRATION_SECONDS:900}
+    refresh-token-expiration-seconds: ${REFRESH_TOKEN_EXPIRATION_SECONDS:2592000}
+
+  # ============================================================
+  # The firm (Settings -> Firm Profile)
+  # ============================================================
+  firm:
+    name: ${FIRM_NAME:Meridian Estates}
+    code: ${FIRM_CODE:ME-001}
+    email: ${FIRM_EMAIL:advisory@meridianestates.example}
+    phone: ${FIRM_PHONE:+91-22-6155-4400}
+    address: ${FIRM_ADDRESS:Meridian House, 14 Ballard Estate, Fort, Mumbai 400001}
+    licence: ${FIRM_LICENCE:RERA/ME/2026/0114}
+
+  # ============================================================
+  # Portfolio policy
+  #
+  # The thresholds the dashboard, the "needs attention" rail and the reports
+  # reason about. Every one of them is configuration rather than a constant,
+  # because two firms will disagree about all of them.
+  # ============================================================
+  portfolio:
+    # A lease inside this window is called out as expiring.
+    lease-expiry-warning-days: ${LEASE_EXPIRY_WARNING_DAYS:60}
+    # A lease inside this window is urgent.
+    lease-expiry-urgent-days: ${LEASE_EXPIRY_URGENT_DAYS:30}
+    # Rent falls due on this day of the month.
+    rent-due-day: ${RENT_DUE_DAY:5}
+    # Days past due before an invoice is reported as overdue rather than
+    # merely outstanding. The two are never the same figure.
+    rent-overdue-grace-days: ${RENT_OVERDUE_GRACE_DAYS:5}
+    # The occupancy the portfolio is managed against, drawn as the gauge target.
+    occupancy-target-percent: ${OCCUPANCY_TARGET_PERCENT:92}
+    # A listing unsold or unlet beyond this is flagged as stale.
+    listing-stale-days: ${LISTING_STALE_DAYS:45}
+    # How long before a viewing the prospect is expected to be reminded.
+    viewing-reminder-hours: ${VIEWING_REMINDER_HOURS:24}
+    # An unanswered maintenance request older than this is late.
+    maintenance-urgent-hours: ${MAINTENANCE_URGENT_HOURS:24}
+    # The window the dashboard and the trend charts summarise.
+    trend-months: ${TREND_MONTHS:14}
+
+  # ============================================================
+  # Money
+  # ============================================================
+  money:
+    currency: ${FEE_CURRENCY:INR}
+    currency-symbol: ${FEE_CURRENCY_SYMBOL:Rs.}
+
+  # ============================================================
+  # Data Import (INSERT-ONLY)
+  # ============================================================
+  imports:
+    max-file-size-mb: ${IMPORT_MAX_FILE_SIZE_MB:10}
+    max-rows: ${IMPORT_MAX_ROWS:5000}
+    batch-size: ${IMPORT_BATCH_SIZE:200}
+
+  # ============================================================
+  # Industry / product platform
+  # ============================================================
+  platform:
+    industry: ${INDUSTRY:REAL_ESTATE}
+    product: ${PRODUCT_CODE:REAL_ESTATE_DASHBOARD}
+    brand:
+      product-name: ${BRAND_PRODUCT_NAME:}
+      brand-name: ${BRAND_NAME:}
+      company-name: ${BRAND_COMPANY_NAME:}
+      logo-url: ${BRAND_LOGO_URL:}
+      favicon-url: ${BRAND_FAVICON_URL:}
+      login-headline: ${BRAND_LOGIN_HEADLINE:}
+      login-subheadline: ${BRAND_LOGIN_SUBHEADLINE:}
+      primary-color: ${BRAND_PRIMARY_COLOR:}
+      secondary-color: ${BRAND_SECONDARY_COLOR:}
+
+logging:
+  level:
+    root: INFO
+    com.meridian.realestate: INFO
